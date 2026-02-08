@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+@layer base {
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #000000;
+        color: #ffffff;
+    }
+}
+
+@layer components {
+    .text-outskill-lime {
+        color: #B8EF43;
+    }
+
+    .bg-outskill-lime {
+        background-color: #B8EF43;
+    }
+
+    .border-outskill-lime {
+        border-color: #B8EF43;
+    }
+
+    .mmt-gradient {
+        background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+    }
+
+    .widget-shadow {
+        box-shadow: 0 10px 40px -10px rgba(184, 239, 67, 0.1);
+    }
+
+    .dark-card {
+        background-color: #0a0a0a;
+        border: 1px solid #1f1f1f;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #B8EF43;
+        border-radius: 10px;
+    }
+
+    /* Outskill Style Buttons */
+    .outskill-btn {
+        background-color: #B8EF43;
+        color: #000000;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 800;
+    }
+
+    .outskill-btn:hover {
+        opacity: 0.9;
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(184, 239, 67, 0.3);
+    }
+
+    input::placeholder {
+        color: #4b5563;
+    }
+}

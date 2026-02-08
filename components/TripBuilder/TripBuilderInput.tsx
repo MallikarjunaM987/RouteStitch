@@ -36,8 +36,7 @@ export default function TripBuilderInput({
             date: new Date(),
             time: '',
             passengers: 1,
-            preference: 'balanced',
-            stops: []
+            preference: 'balanced'
         }
     });
 
@@ -68,8 +67,8 @@ export default function TripBuilderInput({
             date: data.date.toISOString().split('T')[0],
             time: data.time || undefined,
             passengers: data.passengers,
-            preference: data.preference,
-            stops: [] // Will add stop management in future
+            preference: data.preference
+            // Don't include stops if empty - it's optional in schema
         };
 
         onSearch(tripInput);
@@ -208,8 +207,8 @@ export default function TripBuilderInput({
                     type="submit"
                     disabled={isLoading || !originLocation || !destinationLocation}
                     className={`w-full py-6 rounded-2xl font-black text-lg uppercase tracking-wider transition-all ${isLoading || !originLocation || !destinationLocation
-                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                            : 'bg-outskill-lime text-black hover:scale-105 hover:shadow-2xl hover:shadow-outskill-lime/20'
+                        ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                        : 'bg-outskill-lime text-black hover:scale-105 hover:shadow-2xl hover:shadow-outskill-lime/20'
                         }`}
                 >
                     {isLoading ? (

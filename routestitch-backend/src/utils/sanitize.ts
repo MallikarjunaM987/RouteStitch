@@ -164,8 +164,6 @@ export function cleanupRateLimits(): void {
     }
 }
 
-// Run cleanup every 5 minutes
-if (typeof window === 'undefined') {
-    // Server-side only
-    setInterval(cleanupRateLimits, 5 * 60 * 1000);
-}
+// Run cleanup every 5 minutes in Node.js environment
+// This file is backend-only, so we can safely use setInterval
+setInterval(cleanupRateLimits, 5 * 60 * 1000);

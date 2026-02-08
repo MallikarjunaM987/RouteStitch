@@ -75,7 +75,7 @@ export const tripBuilderFormSchema = z.object({
     stops: z.array(z.object({
         location: z.string().min(1),
         duration: z.number().min(15).max(4320)
-    })).default([])
+    })).optional()
 });
 
 // Type inference from Zod schemas

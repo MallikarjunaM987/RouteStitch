@@ -149,12 +149,12 @@
 
 ## 🎯 THIS WEEK'S GOALS
 
-- [x] Setup PostgreSQL + Prisma (TODAY)
-- [x] Implement route ranking algorithm (TODAY)
-- [x] Setup authentication (TODAY)
-- [ ] Buffer calculator (TODAY/Tomorrow)
-- [ ] Redis caching (Tomorrow)
-- [ ] MOTIS Docker setup (Next 2 days)
+- [ ] Setup PostgreSQL + Prisma (TODAY) ⭐ CRITICAL - NOT STARTED
+- [ ] Implement route ranking algorithm (TODAY/Tomorrow)
+- [ ] Setup authentication (Next 2 days)
+- [ ] Buffer calculator (Next 3 days)
+- [ ] Redis caching (Next week)
+- [ ] MOTIS Docker setup (Next 2 weeks - use mock data initially)
 
 ---
 

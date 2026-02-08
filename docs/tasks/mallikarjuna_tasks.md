@@ -203,12 +203,13 @@
 
 ## 🎯 THIS WEEK'S GOALS
 
-- [x] Nominatim geocoding integration (TODAY)
-- [x] RedBus web scraper (TODAY)
-- [x] Search API endpoint (TODAY)
-- [ ] Google Flights scraper (Tomorrow/Next day)
-- [ ] GTFS data collection for MOTIS (Next 2-3 days)
-- [ ] Train booking platform deep links (Next week)
+- [ ] Search API endpoint with MOCK DATA (TODAY) ⭐ HIGHEST PRIORITY
+- [ ] Nominatim geocoding integration (TODAY/Tomorrow)
+- [ ] Create top 100 cities JSON file (Tomorrow)
+- [ ] RedBus web scraper (Next 2-3 days)
+- [ ] Google Flights scraper (Next week)
+- [ ] GTFS data collection for MOTIS (Next 2 weeks - LOW PRIORITY)
+- [ ] Train booking platform deep links (Next 2 weeks)
 
 ---
 

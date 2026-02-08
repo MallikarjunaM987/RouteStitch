@@ -13,11 +13,11 @@
 **Difficulty:** Intermediate
 
 **Current Status:**
-- ✅ TripBuilderInput component exists (needs polishing)
-- ✅ LocationInput component exists (needs integration)
-- ⚠️ DateTimeSelector needs work
-- ❌ PreferenceSelector incomplete
-- ❌ PassengerSelector incomplete
+- ⚠️ TripBuilderInput component EXISTS but incomplete (~40% done)
+- ⚠️ LocationInput component EXISTS but needs API integration (~50% done)
+- ⚠️ PreferenceSelector EXISTS but incomplete (~30% done)
+- ❌ DateTimeSelector NOT STARTED
+- ❌ PassengerSelector NOT STARTED
 
 **Tasks:**
 - [ ] **Fix and polish LocationInput.tsx**

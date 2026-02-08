@@ -7,13 +7,17 @@ const Navbar: React.FC = () => {
     <nav className="bg-black px-4 md:px-20 py-5 flex items-center justify-between sticky top-0 z-50 shadow-sm border-b border-[#1f1f1f]">
       <div className="flex items-center gap-10">
         <Link to="/" className="flex items-center">
-          <span className="text-2xl font-black tracking-tighter text-white">make<span className="text-outskill-lime italic">my</span>trip</span>
+          <span className="text-2xl font-black tracking-tighter text-white">Route<span className="text-outskill-lime italic">Stitch</span></span>
         </Link>
-        
+
         <div className="hidden lg:flex items-center gap-8">
-          {['Super Offers', 'myBiz', 'My Trips'].map((item, idx) => (
+          <Link to="/tripbuilder" className="flex items-center gap-2 text-[11px] font-black text-gray-400 cursor-pointer hover:text-outskill-lime transition-colors uppercase tracking-widest">
+            <span className="text-lg opacity-80">🗺️</span>
+            <span>TripBuilder</span>
+          </Link>
+          {['Track Live', 'My Trips'].map((item, idx) => (
             <div key={item} className="flex items-center gap-2 text-[11px] font-black text-gray-400 cursor-pointer hover:text-outskill-lime transition-colors uppercase tracking-widest">
-              <span className="text-lg opacity-80">{idx === 0 ? '🎁' : idx === 1 ? '🏢' : '💼'}</span>
+              <span className="text-lg opacity-80">{idx === 0 ? '📍' : '🎫'}</span>
               <span>{item}</span>
             </div>
           ))}

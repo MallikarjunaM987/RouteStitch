@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { AppProvider } from './store/AppContext';
@@ -9,6 +8,7 @@ import SearchResults from './pages/SearchResults';
 import Booking from './pages/Booking';
 import Dashboard from './pages/Dashboard';
 import SeatSelection from './pages/SeatSelection';
+import TripBuilder from './pages/TripBuilder';
 
 const App: React.FC = () => {
   return (
@@ -19,6 +19,7 @@ const App: React.FC = () => {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/tripbuilder" element={<TripBuilder />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/seats" element={<SeatSelection />} />
               <Route path="/booking" element={<Booking />} />

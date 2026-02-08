@@ -2,16 +2,14 @@
 import React from 'react';
 
 export const CATEGORIES = [
-  { name: 'Flights', icon: '✈️' },
-  { name: 'Hotels', icon: '🏨' },
-  { name: 'Homestays', icon: '🏠' },
-  { name: 'Holiday Packages', icon: '🏖️' },
-  { name: 'Trains', icon: '🚆' },
-  { name: 'Buses', icon: '🚌' },
-  { name: 'Cabs', icon: '🚕' },
-  { name: 'Forex', icon: '💱' },
-  { name: 'Charter Flights', icon: '🛩️' },
-  { name: 'Activities', icon: '🛶' },
+  { name: 'TripBuilder', icon: '🗺️' },
+  { name: 'Smart Search', icon: '⚡' },
+  { name: 'Track Live', icon: '📍' },
+  { name: 'Safe Connect', icon: '🛡️' },
+  { name: 'Group Travel', icon: '👥' },
+  { name: 'For Business', icon: '💼' },
+  { name: 'My Trips', icon: '🎫' },
+  { name: 'How It Works', icon: '📚' },
 ];
 
 export const MOCK_FLIGHTS: any[] = [

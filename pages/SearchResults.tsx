@@ -13,8 +13,8 @@ const SearchResults: React.FC = () => {
     navigate('/seats');
   };
 
-  const isTrain = searchParams.category === 'Trains';
-  const dataList = isTrain ? MOCK_TRAINS : MOCK_FLIGHTS;
+  const isMultiStop = searchParams.category === 'TripBuilder';
+  const dataList = isMultiStop ? MOCK_TRAINS : MOCK_FLIGHTS;
 
   return (
     <div className="bg-black min-h-screen">
@@ -47,7 +47,7 @@ const SearchResults: React.FC = () => {
           <div className="bg-[#0a0a0a] rounded-3xl p-8 sticky top-[210px] border border-[#1f1f1f]">
             <h3 className="font-black text-white mb-8 uppercase text-xs tracking-widest">Global Filters</h3>
             <div className="space-y-5">
-              {['Direct Flights Only', 'Morning Slots', 'Priority Seating', 'Meal Included'].map((f) => (
+              {['Multi-Stop Route', 'Morning Departure', 'Priority Options', 'Express Journey'].map((f) => (
                 <label key={f} className="flex items-center gap-4 cursor-pointer group">
                   <input type="checkbox" className="w-5 h-5 accent-outskill-lime bg-black border-gray-800 rounded" />
                   <span className="text-[11px] font-black text-gray-500 group-hover:text-outskill-lime transition-colors uppercase tracking-tight">{f}</span>
@@ -61,8 +61,8 @@ const SearchResults: React.FC = () => {
           <div className="bg-[#0a0a0a] p-8 rounded-3xl flex items-center justify-between border-b-2 border-outskill-lime">
             <h2 className="text-lg font-black text-white uppercase tracking-tighter">Available {searchParams.category}</h2>
             <div className="flex gap-8 items-center">
-               <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Priority Sort:</span>
-               <span className="text-[11px] font-black text-outskill-lime cursor-pointer uppercase tracking-widest">Price (Lowest First)</span>
+              <span className="text-[10px] font-black text-gray-600 uppercase tracking-widest">Priority Sort:</span>
+              <span className="text-[11px] font-black text-outskill-lime cursor-pointer uppercase tracking-widest">Price (Lowest First)</span>
             </div>
           </div>
 
@@ -87,7 +87,7 @@ const SearchResults: React.FC = () => {
                       <p className="text-4xl font-black text-white tracking-tighter">{item.departureTime}</p>
                       <p className="text-[11px] text-outskill-lime font-black uppercase tracking-widest mt-2">{item.origin}</p>
                     </div>
-                    
+
                     <div className="flex-1 px-10 relative">
                       <span className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] mb-2 block">{item.duration}</span>
                       <div className="w-full h-[1px] bg-[#1f1f1f] my-2 relative">
@@ -105,11 +105,11 @@ const SearchResults: React.FC = () => {
                   <div className="flex flex-col items-end gap-1 w-52 border-l border-dashed border-[#1f1f1f] pl-12">
                     <p className="text-4xl font-black text-white tracking-tighter">₹{item.price.toLocaleString()}</p>
                     <p className="text-[10px] text-gray-600 font-black uppercase tracking-widest mb-4">Total Price</p>
-                    <button 
+                    <button
                       onClick={() => handleSelectFlight(item)}
                       className="outskill-btn px-10 py-4 rounded-full text-xs uppercase tracking-widest w-full"
                     >
-                      {isTrain ? 'SELECT' : 'RESERVE'}
+                      {isMultiStop ? 'SELECT' : 'BOOK NOW'}
                     </button>
                   </div>
                 </div>

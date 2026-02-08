@@ -1,5 +1,5 @@
 
-export type Category = 'Flights' | 'Hotels' | 'Homestays' | 'Holiday Packages' | 'Trains' | 'Buses' | 'Cabs' | 'Forex' | 'Charter Flights' | 'Activities';
+export type Category = 'TripBuilder' | 'Smart Search' | 'Track Live' | 'Safe Connect' | 'Group Travel' | 'For Business' | 'My Trips' | 'How It Works';
 
 export interface Flight {
   id: string;

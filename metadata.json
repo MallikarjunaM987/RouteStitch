@@ -1,0 +1,5 @@
+{
+  "name": "MMT Visual Twin",
+  "description": "A comprehensive, high-fidelity clone of the MakeMyTrip platform featuring the iconic search widget, flight listings, booking flows, and a responsive design system using React and Tailwind CSS.",
+  "requestFramePermissions": []
+}

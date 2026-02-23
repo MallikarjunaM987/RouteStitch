@@ -1,10 +1,52 @@
 import { tripInputSchema } from '../../lib/validation/tripInput';
 import { sanitizeObject, checkRateLimit } from '../../lib/utils/sanitize';
-import { SearchResult, Route } from '../../types/tripBuilder';
+import { SearchResult, Route as OldRoute } from '../../types/tripBuilder';
+import { searchRoutes as searchMockRoutes } from './mockRouteService';
+import { Route as NewRoute } from '../../types/route';
 
 // Rate limiting: 10 requests per minute per IP
 const RATE_LIMIT_MAX = 10;
 const RATE_LIMIT_WINDOW = 60 * 1000; // 1 minute in milliseconds
+
+// Helper to convert new Route format to old TripBuilder format
+function convertRouteFormat(newRoute: NewRoute, tripInput: any): OldRoute {
+    return {
+        id: newRoute.id,
+        type: newRoute.legs.some(l => l.mode === 'flight') ? 'flight_local' : 'train_metro',
+        legs: newRoute.legs.map((leg, i) => ({
+            id: `leg-${i + 1}`,
+            mode: leg.mode,
+            operator: leg.operator,
+            from: i === 0 ? tripInput.origin : {
+                ...tripInput.origin,
+                name: leg.from,
+                type: 'station'
+            },
+            to: i === newRoute.legs.length - 1 ? tripInput.destination : {
+                ...tripInput.destination,
+                name: leg.to,
+                type: 'station'
+            },
+            departureTime: `${tripInput.date}T${leg.departure}`,
+            arrivalTime: `${tripInput.date}T${leg.arrival}`,
+            duration: leg.durationMinutes,
+            distance: 0,
+            cost: leg.cost,
+            details: {
+                trainNumber: leg.trainNumber,
+                flightNumber: leg.flightNumber,
+                bookingUrl: leg.bookingPlatforms?.[0]?.url || ''
+            }
+        })),
+        totalCost: newRoute.totalCost,
+        totalDuration: newRoute.totalDurationMinutes,
+        totalDistance: 0,
+        reliability: newRoute.reliability,
+        comfortScore: 80,
+        finalScore: newRoute.score || 80,
+        category: newRoute.category || 'Recommended'
+    };
+}
 
 export async function searchRoutes(body: any): Promise<{ success: boolean; data?: SearchResult; error?: string; status: number }> {
     try {
@@ -38,153 +80,168 @@ export async function searchRoutes(body: any): Promise<{ success: boolean; data?
 
         const tripInput = validationResult.data;
 
-        // TODO: In future, this is where we'd call MOTIS or other routing engines
-        // For now, return mock data to demonstrate the working input system
+        // Call the new mock route service
+        const mockInput = {
+            origin: tripInput.origin.city,
+            destination: tripInput.destination.city,
+            date: tripInput.date,
+            time: tripInput.time,
+            passengers: tripInput.passengers,
+            preference: tripInput.preference as 'fastest' | 'cheapest' | 'balanced'
+        };
 
-        const mockRoutes: Route[] = [
-            {
-                id: 'route-1',
-                type: 'train_metro',
-                legs: [
-                    {
-                        id: 'leg-1',
-                        mode: 'taxi',
-                        from: tripInput.origin,
-                        to: {
-                            ...tripInput.origin,
-                            name: `${tripInput.origin.city} Railway Station`,
-                            type: 'station'
+        const newRoutes = await searchMockRoutes(mockInput);
+
+        // Convert to old format for backwards compatibility
+        const mockRoutes: OldRoute[] = newRoutes.map(route => convertRouteFormat(route, tripInput));
+
+        // Keep the old mock data as fallback if new service returns empty
+        if (mockRoutes.length === 0) {
+            const fallbackRoutes: OldRoute[] = [
+                {
+                    id: 'route-1',
+                    type: 'train_metro',
+                    legs: [
+                        {
+                            id: 'leg-1',
+                            mode: 'taxi',
+                            from: tripInput.origin,
+                            to: {
+                                ...tripInput.origin,
+                                name: `${tripInput.origin.city} Railway Station`,
+                                type: 'station'
+                            },
+                            departureTime: `${tripInput.date}T${tripInput.time || '08:00'}`,
+                            arrivalTime: `${tripInput.date}T${tripInput.time || '08:30'}`,
+                            duration: 30,
+                            distance: 15,
+                            cost: 350,
+                            details: {
+                                bookingUrl: 'https://uber.com'
+                            }
                         },
-                        departureTime: `${tripInput.date}T${tripInput.time || '08:00'}`,
-                        arrivalTime: `${tripInput.date}T${tripInput.time || '08:30'}`,
-                        duration: 30,
-                        distance: 15,
-                        cost: 350,
-                        details: {
-                            bookingUrl: 'https://uber.com'
+                        {
+                            id: 'leg-2',
+                            mode: 'train',
+                            operator: 'Indian Railways',
+                            from: {
+                                ...tripInput.origin,
+                                name: `${tripInput.origin.city} Railway Station`,
+                                type: 'station'
+                            },
+                            to: {
+                                ...tripInput.destination,
+                                name: `${tripInput.destination.city} Railway Station`,
+                                type: 'station'
+                            },
+                            departureTime: `${tripInput.date}T09:00`,
+                            arrivalTime: `${tripInput.date}T23:30`,
+                            duration: 870, // 14.5 hours
+                            distance: 850,
+                            cost: 2800,
+                            details: {
+                                trainNumber: '12951',
+                                trainName: 'Rajdhani Express',
+                                seatClass: '3A',
+                                seatsAvailable: 42,
+                                bookingUrl: 'https://irctc.co.in'
+                            }
+                        },
+                        {
+                            id: 'leg-3',
+                            mode: 'metro',
+                            from: {
+                                ...tripInput.destination,
+                                name: `${tripInput.destination.city} Railway Station`,
+                                type: 'station'
+                            },
+                            to: tripInput.destination,
+                            departureTime: `${tripInput.date}T23:45`,
+                            arrivalTime: `${tripInput.date}T00:15`,
+                            duration: 30,
+                            distance: 12,
+                            cost: 40
                         }
-                    },
-                    {
-                        id: 'leg-2',
-                        mode: 'train',
-                        operator: 'Indian Railways',
-                        from: {
-                            ...tripInput.origin,
-                            name: `${tripInput.origin.city} Railway Station`,
-                            type: 'station'
+                    ],
+                    totalCost: 3190,
+                    totalDuration: 930, // 15.5 hours total
+                    totalDistance: 877,
+                    reliability: 95,
+                    comfortScore: 85,
+                    finalScore: 88,
+                    category: 'Best Value',
+                    bufferTimes: [
+                        { legIndex: 1, buffer: 30, status: 'safe' },
+                        { legIndex: 2, buffer: 15, status: 'safe' }
+                    ]
+                },
+                {
+                    id: 'route-2',
+                    type: 'flight_local',
+                    legs: [
+                        {
+                            id: 'leg-1',
+                            mode: 'metro',
+                            from: tripInput.origin,
+                            to: {
+                                ...tripInput.origin,
+                                name: `${tripInput.origin.city} Airport`,
+                                type: 'airport'
+                            },
+                            departureTime: `${tripInput.date}T${tripInput.time || '08:00'}`,
+                            arrivalTime: `${tripInput.date}T${tripInput.time || '08:45'}`,
+                            duration: 45,
+                            cost: 60
                         },
-                        to: {
-                            ...tripInput.destination,
-                            name: `${tripInput.destination.city} Railway Station`,
-                            type: 'station'
+                        {
+                            id: 'leg-2',
+                            mode: 'flight',
+                            operator: 'IndiGo',
+                            from: {
+                                ...tripInput.origin,
+                                name: `${tripInput.origin.city} Airport`,
+                                type: 'airport'
+                            },
+                            to: {
+                                ...tripInput.destination,
+                                name: `${tripInput.destination.city} Airport`,
+                                type: 'airport'
+                            },
+                            departureTime: `${tripInput.date}T11:00`,
+                            arrivalTime: `${tripInput.date}T13:15`,
+                            duration: 135,
+                            distance: 850,
+                            cost: 4500,
+                            details: {
+                                flightNumber: '6E-505',
+                                bookingUrl: 'https://makemytrip.com'
+                            }
                         },
-                        departureTime: `${tripInput.date}T09:00`,
-                        arrivalTime: `${tripInput.date}T23:30`,
-                        duration: 870, // 14.5 hours
-                        distance: 850,
-                        cost: 2800,
-                        details: {
-                            trainNumber: '12951',
-                            trainName: 'Rajdhani Express',
-                            seatClass: '3A',
-                            seatsAvailable: 42,
-                            bookingUrl: 'https://irctc.co.in'
+                        {
+                            id: 'leg-3',
+                            mode: 'taxi',
+                            from: {
+                                ...tripInput.destination,
+                                name: `${tripInput.destination.city} Airport`,
+                                type: 'airport'
+                            },
+                            to: tripInput.destination,
+                            departureTime: `${tripInput.date}T13:30`,
+                            arrivalTime: `${tripInput.date}T14:45`,
+                            duration: 75,
+                            cost: 1000
                         }
-                    },
-                    {
-                        id: 'leg-3',
-                        mode: 'metro',
-                        from: {
-                            ...tripInput.destination,
-                            name: `${tripInput.destination.city} Railway Station`,
-                            type: 'station'
-                        },
-                        to: tripInput.destination,
-                        departureTime: `${tripInput.date}T23:45`,
-                        arrivalTime: `${tripInput.date}T00:15`,
-                        duration: 30,
-                        distance: 12,
-                        cost: 40
-                    }
-                ],
-                totalCost: 3190,
-                totalDuration: 930, // 15.5 hours total
-                totalDistance: 877,
-                reliability: 95,
-                comfortScore: 85,
-                finalScore: 88,
-                category: 'Best Value',
-                bufferTimes: [
-                    { legIndex: 1, buffer: 30, status: 'safe' },
-                    { legIndex: 2, buffer: 15, status: 'safe' }
-                ]
-            },
-            {
-                id: 'route-2',
-                type: 'flight_local',
-                legs: [
-                    {
-                        id: 'leg-1',
-                        mode: 'metro',
-                        from: tripInput.origin,
-                        to: {
-                            ...tripInput.origin,
-                            name: `${tripInput.origin.city} Airport`,
-                            type: 'airport'
-                        },
-                        departureTime: `${tripInput.date}T${tripInput.time || '08:00'}`,
-                        arrivalTime: `${tripInput.date}T${tripInput.time || '08:45'}`,
-                        duration: 45,
-                        cost: 60
-                    },
-                    {
-                        id: 'leg-2',
-                        mode: 'flight',
-                        operator: 'IndiGo',
-                        from: {
-                            ...tripInput.origin,
-                            name: `${tripInput.origin.city} Airport`,
-                            type: 'airport'
-                        },
-                        to: {
-                            ...tripInput.destination,
-                            name: `${tripInput.destination.city} Airport`,
-                            type: 'airport'
-                        },
-                        departureTime: `${tripInput.date}T11:00`,
-                        arrivalTime: `${tripInput.date}T13:15`,
-                        duration: 135,
-                        distance: 850,
-                        cost: 4500,
-                        details: {
-                            flightNumber: '6E-505',
-                            bookingUrl: 'https://makemytrip.com'
-                        }
-                    },
-                    {
-                        id: 'leg-3',
-                        mode: 'taxi',
-                        from: {
-                            ...tripInput.destination,
-                            name: `${tripInput.destination.city} Airport`,
-                            type: 'airport'
-                        },
-                        to: tripInput.destination,
-                        departureTime: `${tripInput.date}T13:30`,
-                        arrivalTime: `${tripInput.date}T14:45`,
-                        duration: 75,
-                        cost: 1000
-                    }
-                ],
-                totalCost: 5560,
-                totalDuration: 255, // 4 hours 15 min
-                totalDistance: 850,
-                reliability: 85,
-                comfortScore: 90,
-                finalScore: 85,
-                category: 'Fastest'
-            }
-        ];
+                    ],
+                    totalCost: 5560,
+                    totalDuration: 255, // 4 hours 15 min
+                    totalDistance: 850,
+                    reliability: 85,
+                    comfortScore: 90,
+                    finalScore: 85,
+                    category: 'Fastest'
+                }
+            ];
+        }
 
         const result: SearchResult = {
             success: true,
@@ -210,3 +267,4 @@ export async function searchRoutes(body: any): Promise<{ success: boolean; data?
         };
     }
 }
+

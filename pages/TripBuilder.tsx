@@ -2,10 +2,13 @@
 
 import React, { useState } from 'react';
 import TripBuilderInput from '../components/TripBuilder/TripBuilderInput';
+import RouteResults from '../components/TripBuilder/RouteResults';
 import { TripInput, SearchResult } from '../types/tripBuilder';
 import { searchRoutes } from '../lib/services/searchRoutesService';
+import { useApp } from '../store/AppContext';
 
 export default function TripBuilderPage() {
+    const { searchParams } = useApp();
     const [searchResults, setSearchResults] = useState<SearchResult | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -30,6 +33,11 @@ export default function TripBuilderPage() {
         }
     };
 
+    const handleNewSearch = () => {
+        setSearchResults(null);
+        setError(null);
+    };
+
     return (
         <div className="min-h-screen bg-black py-12 px-4">
             <div className="max-w-7xl mx-auto">
@@ -43,8 +51,12 @@ export default function TripBuilderPage() {
                     </p>
                 </div>
 
-                {/* TripBuilder Input */}
-                <TripBuilderInput onSearch={handleSearch} isLoading={isLoading} />
+                {/* TripBuilderInput */}
+                <TripBuilderInput
+                    onSearch={handleSearch}
+                    isLoading={isLoading}
+                    initialValues={{ from: searchParams.from, to: searchParams.to }}
+                />
 
                 {/* Error Message */}
                 {error && (
@@ -59,34 +71,14 @@ export default function TripBuilderPage() {
                     </div>
                 )}
 
-                {/* Placeholder for Search Results */}
-                {searchResults && (
-                    <div className="mt-12 p-8 bg-gradient-to-br from-[#0a0a0a] to-black border border-[#1f1f1f] rounded-3xl">
-                        <div className="text-center">
-                            <h2 className="text-3xl font-black text-white mb-4">
-                                🎉 Search Successful!
-                            </h2>
-                            <p className="text-gray-400 font-medium mb-6">
-                                Found {searchResults.totalResults} routes from {searchResults.searchParams.origin.name} to {searchResults.searchParams.destination.name}
-                            </p>
-
-                            <div className="p-6 bg-blue-500/10 border border-blue-500/30 rounded-xl">
-                                <p className="text-sm text-blue-400 font-bold">
-                                    🚧 Route display component coming soon! For now, you can see the search worked.
-                                </p>
-                            </div>
-
-                            {/* Debug Info */}
-                            <details className="mt-6 text-left">
-                                <summary className="cursor-pointer text-sm font-black text-gray-500 hover:text-outskill-lime transition-colors uppercase tracking-wider">
-                                    View Raw Data (Debug)
-                                </summary>
-                                <pre className="mt-4 p-4 bg-black border border-[#1f1f1f] rounded-xl text-xs text-gray-400 overflow-auto max-h-96">
-                                    {JSON.stringify(searchResults, null, 2)}
-                                </pre>
-                            </details>
-                        </div>
-                    </div>
+                {/* Route Results */}
+                {searchResults && searchResults.routes.length > 0 && (
+                    <RouteResults
+                        routes={searchResults.routes}
+                        origin={searchResults.searchParams.origin.name}
+                        destination={searchResults.searchParams.destination.name}
+                        onNewSearch={handleNewSearch}
+                    />
                 )}
 
                 {/* Features Section */}

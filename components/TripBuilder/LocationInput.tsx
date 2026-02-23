@@ -32,6 +32,15 @@ export default function LocationInput({
     const inputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
 
+    // Sync query with value prop
+    useEffect(() => {
+        if (value) {
+            setQuery(value.displayName || value.name || value.city);
+        } else {
+            setQuery('');
+        }
+    }, [value]);
+
     // Debounced search
     useEffect(() => {
         if (!query || query.length < 2) {

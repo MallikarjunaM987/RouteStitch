@@ -13,11 +13,13 @@ import PreferenceSelector from './PreferenceSelector';
 interface TripBuilderInputProps {
     onSearch: (tripData: TripInput) => void;
     isLoading?: boolean;
+    initialValues?: { from?: string; to?: string };
 }
 
 export default function TripBuilderInput({
     onSearch,
-    isLoading = false
+    isLoading = false,
+    initialValues
 }: TripBuilderInputProps) {
     const [originLocation, setOriginLocation] = useState<Location | null>(null);
     const [destinationLocation, setDestinationLocation] = useState<Location | null>(null);
@@ -31,8 +33,8 @@ export default function TripBuilderInput({
     } = useForm<TripBuilderFormData>({
         resolver: zodResolver(tripBuilderFormSchema),
         defaultValues: {
-            origin: '',
-            destination: '',
+            origin: initialValues?.from || '',
+            destination: initialValues?.to || '',
             date: new Date(),
             time: '',
             passengers: 1,

@@ -10,7 +10,8 @@ const SearchWidget: React.FC = () => {
   const navigate = useNavigate();
 
   const handleSearch = () => {
-    navigate('/search');
+    // Navigate to TripBuilder with the search params
+    navigate('/tripbuilder');
   };
 
   const isMultiStop = searchParams.category === 'TripBuilder';
@@ -51,20 +52,38 @@ const SearchWidget: React.FC = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 border border-[#1f1f1f] rounded-3xl overflow-hidden bg-black shadow-inner">
-            <div className="p-8 border-r border-[#1f1f1f] hover:bg-[#111111] cursor-pointer transition-all group">
+            <div className="p-8 border-r border-[#1f1f1f] hover:bg-[#111111] transition-all  group">
               <p className="text-[10px] text-outskill-lime font-black uppercase tracking-[0.2em] mb-2">{isGroupTravel ? 'Meeting Point' : 'From'}</p>
-              <h3 className="text-2xl font-black text-white group-hover:translate-x-1 transition-transform">{searchParams.from}</h3>
-              <p className="text-[10px] text-gray-500 font-bold truncate mt-1 uppercase tracking-tighter">{isMultiStop ? 'CBE, Junction' : 'CJB, Coimbatore Intl'}</p>
+              <input
+                type="text"
+                value={searchParams.from}
+                onChange={(e) => setSearchParams({ ...searchParams, from: e.target.value })}
+                placeholder="Enter city..."
+                className="text-2xl font-black text-white bg-transparent border-none outline-none w-full group-hover:translate-x-1 transition-transform placeholder:text-gray-700"
+              />
+              <p className="text-[10px] text-gray-500 font-bold truncate mt-1 uppercase tracking-tighter">CBE, Junction</p>
             </div>
-            <div className="p-8 border-r border-[#1f1f1f] hover:bg-[#111111] cursor-pointer relative transition-all group">
+            <div className="p-8 border-r border-[#1f1f1f] hover:bg-[#111111] relative transition-all group">
               {!isGroupTravel && (
-                <div className="absolute -left-5 top-1/2 -translate-y-1/2 bg-[#0a0a0a] rounded-full p-2.5 shadow-xl border border-[#1f1f1f] z-10 text-outskill-lime group-hover:rotate-180 transition-transform duration-500">
+                <div className="absolute -left-5 top-1/2 -translate-y-1/2 bg-[#0a0a0a] rounded-full p-2.5 shadow-xl border border-[#1f1f1f] z-10 text-outskill-lime group-hover:rotate-180 transition-transform duration-500 cursor-pointer"
+                  onClick={() => setSearchParams({ ...searchParams, from: searchParams.to, to: searchParams.from })}
+                >
                   ⇄
                 </div>
               )}
               <p className="text-[10px] text-outskill-lime font-black uppercase tracking-[0.2em] mb-2">{isGroupTravel ? 'Destination' : 'To'}</p>
-              <h3 className="text-2xl font-black text-white group-hover:translate-x-1 transition-transform">{isGroupTravel ? '24 Jun' : searchParams.to}</h3>
-              <p className="text-[10px] text-gray-500 font-bold truncate mt-1 uppercase tracking-tighter">{isGroupTravel ? 'Monday' : (isMultiStop ? 'BGM, Belgaum Station' : 'IXG, Belgaum Airport')}</p>
+              {isGroupTravel ? (
+                <h3 className="text-2xl font-black text-white group-hover:translate-x-1 transition-transform">24 Jun</h3>
+              ) : (
+                <input
+                  type="text"
+                  value={searchParams.to}
+                  onChange={(e) => setSearchParams({ ...searchParams, to: e.target.value })}
+                  placeholder="Enter city..."
+                  className="text-2xl font-black text-white bg-transparent border-none outline-none w-full group-hover:translate-x-1 transition-transform placeholder:text-gray-700"
+                />
+              )}
+              <p className="text-[10px] text-gray-500 font-bold truncate mt-1 uppercase tracking-tighter">{isGroupTravel ? 'Monday' : 'BGM, Belgaum Station'}</p>
             </div>
             <div className="p-8 border-r border-[#1f1f1f] hover:bg-[#111111] cursor-pointer transition-all">
               <p className="text-[10px] text-outskill-lime font-black uppercase tracking-[0.2em] mb-2">{isGroupTravel ? 'Date' : 'Departure'}</p>

@@ -18,8 +18,8 @@ const AppContext = createContext<AppState | undefined>(undefined);
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [searchParams, setSearchParams] = useState<SearchParams>({
     category: 'TripBuilder',
-    from: 'Coimbatore',
-    to: 'Belgaum',
+    from: '',
+    to: '',
     departureDate: new Date().toISOString().split('T')[0],
     travellers: '1 Traveller, Economy'
   });

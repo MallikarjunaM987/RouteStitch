@@ -13,8 +13,8 @@
 **Difficulty:** Medium-Hard
 
 **Tasks:**
-- [ ] Create `lib/services/geocodingService.ts`
-- [ ] Implement Nominatim API wrapper
+- [x] Create `lib/services/geocodingService.ts` (Implemented in `lib/geocoding.ts`)
+- [x] Implement Nominatim API wrapper
   ```typescript
   interface Location {
     id: string;
@@ -40,9 +40,9 @@
     // Cache results in database (CachedGeocode table)
   }
   ```
-- [ ] Add rate limiting (1 request/second)
-- [ ] Implement caching layer (save to PostgreSQL)
-- [ ] Create pre-loaded city list JSON (top 100 Indian cities)
+- [x] Add rate limiting (1 request/second)
+- [x] Implement caching layer (save to PostgreSQL) (Used LRUCache for now)
+- [x] Create pre-loaded city list JSON (top 100 Indian cities)
   ```typescript
   // lib/data/topCities.json
   [
@@ -51,7 +51,7 @@
     // ... 100 cities
   ]
   ```
-- [ ] Test autocomplete with debouncing
+- [x] Test autocomplete with debouncing
 
 **Success Criteria:**
 ✅ Can search "Delhi" and get 5 location suggestions  
@@ -203,9 +203,9 @@
 
 ## 🎯 THIS WEEK'S GOALS
 
-- [ ] Search API endpoint with MOCK DATA (TODAY) ⭐ HIGHEST PRIORITY
-- [ ] Nominatim geocoding integration (TODAY/Tomorrow)
-- [ ] Create top 100 cities JSON file (Tomorrow)
+- [x] Search API endpoint with MOCK DATA (TODAY) ⭐ HIGHEST PRIORITY
+- [x] Nominatim geocoding integration (TODAY/Tomorrow)
+- [x] Create top 100 cities JSON file (Tomorrow)
 - [ ] RedBus web scraper (Next 2-3 days)
 - [ ] Google Flights scraper (Next week)
 - [ ] GTFS data collection for MOTIS (Next 2 weeks - LOW PRIORITY)

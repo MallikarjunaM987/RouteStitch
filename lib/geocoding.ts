@@ -125,7 +125,7 @@ export async function reverseGeocode(
             `lat=${lat}&lon=${lng}&format=json&addressdetails=1`,
             {
                 headers: {
-                    'User-Agent': 'RouteStitch/1.0'
+                    'User-Agent': 'RouteStitch/1.0 (contact@routestitch.com)'
                 }
             }
         );
@@ -156,6 +156,67 @@ export async function reverseGeocode(
             address: `${lat}, ${lng}`,
             country: 'India'
         };
+    }
+}
+
+/**
+ * Forward geocode address to coordinates using Nominatim API
+ * Limits search to India, returns up to 5 results
+ */
+export async function geocodeAddress(address: string): Promise<Location[]> {
+    if (!address || address.trim().length < 2) return [];
+
+    const cacheKey = `fwd_${address.toLowerCase().trim()}`;
+
+    // Check pre-loaded cities first (static fallback)
+    const localMatches = searchCities(address, 5);
+
+    // If we have an exact or very good local match, resolve immediately to save API calls
+    if (localMatches.length > 0 && localMatches[0].displayName.toLowerCase().startsWith(address.toLowerCase())) {
+        return localMatches;
+    }
+
+    // Rate limiting
+    const now = Date.now();
+    const timeSinceLastRequest = now - lastRequestTime;
+    if (timeSinceLastRequest < MIN_REQUEST_INTERVAL) {
+        await new Promise(resolve =>
+            setTimeout(resolve, MIN_REQUEST_INTERVAL - timeSinceLastRequest)
+        );
+    }
+
+    lastRequestTime = Date.now();
+
+    try {
+        const response = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&countrycodes=in&limit=5`,
+            {
+                headers: {
+                    'User-Agent': 'RouteStitch/1.0 (contact@routestitch.com)'
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error('Forward geocoding failed');
+        }
+
+        const data = await response.json();
+
+        return data.map((item: any) => ({
+            id: `nom_${item.place_id}`,
+            name: item.name || address,
+            city: item.address?.city || item.address?.town || item.address?.state_district || item.name,
+            state: item.address?.state || '',
+            country: 'India',
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lon),
+            type: 'city',
+            displayName: item.display_name
+        }));
+    } catch (error) {
+        console.error('Forward geocoding error:', error);
+        return localMatches; // Fallback to local data on API failure
     }
 }
 

@@ -22,9 +22,9 @@ app.get('/api/health', (req: Request, res: Response) => {
     res.json({ status: 'ok', message: 'RouteStitch API is running' });
 });
 
-// Routes will be added here
-// import tripRoutes from './routes/trip.routes';
-// app.use('/api/trips', tripRoutes);
+// Routes
+import tripRoutes from './routes/trip.routes';
+app.use('/api/trips', tripRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {

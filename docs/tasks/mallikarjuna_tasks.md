@@ -114,7 +114,7 @@
 **Difficulty:** Medium
 
 **Tasks:**
-- [ ] Create `app/api/search-routes/route.ts` (Next.js API route)
+- [x] Create `app/api/search-routes/route.ts` (Next.js API route) *(Implemented as Express controller `trip.controller.ts`)*
 - [ ] Implement POST handler
   ```typescript
   export async function POST(request: NextRequest) {
@@ -145,9 +145,9 @@
     return NextResponse.json({ routes: rankedRoutes.slice(0, 5) });
   }
   ```
-- [ ] Add rate limiting middleware (100 req/min per IP)
-- [ ] Add error logging (console.error → later Sentry)
-- [ ] Test with Postman/curl
+- [x] Add rate limiting middleware (100 req/min per IP)
+- [x] Add error logging (console.error → later Sentry)
+- [x] Test with Postman/curl
 
 **Success Criteria:**
 ✅ API returns 200 for valid input  

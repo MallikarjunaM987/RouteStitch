@@ -1,5 +1,6 @@
-import React from 'react';
-import { Route } from '../../types/route';
+import React, { useState, useEffect } from 'react';
+import { Route, Leg } from '../../types/route';
+import { getLiveTrainSummary, LiveTrainSummary } from '../../lib/services/liveTrainService';
 
 interface RouteCardProps {
     route: Route;
@@ -50,6 +51,24 @@ export default function RouteCard({ route, rank }: RouteCardProps) {
         };
         return colors[mode] || 'bg-gray-500/10 text-gray-400 border-gray-500/30';
     };
+
+    const [liveData, setLiveData] = useState<Record<string, LiveTrainSummary | null>>({});
+
+    useEffect(() => {
+        // Fetch live train data for any train legs that have a train number
+        const fetchLiveData = async () => {
+            const trainLegs = route.legs.filter(leg => leg.mode === 'train' && leg.trainNumber);
+            for (const leg of trainLegs) {
+                if (leg.trainNumber && !liveData[leg.trainNumber]) {
+                    const data = await getLiveTrainSummary(leg.trainNumber);
+                    if (data) {
+                        setLiveData(prev => ({ ...prev, [leg.trainNumber as string]: data }));
+                    }
+                }
+            }
+        };
+        fetchLiveData();
+    }, [route.legs]);
 
     return (
         <div className={`p-6 border rounded-2xl hover:border-outskill-lime/50 transition-all group ${getCategoryColor(route.category)}`}>
@@ -135,14 +154,40 @@ export default function RouteCard({ route, rank }: RouteCardProps) {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 className={`px-3 py-1.5 text-xs font-bold rounded-lg border transition-all hover:scale-105 ${platform.recommended
-                                                        ? 'bg-outskill-lime/10 text-outskill-lime border-outskill-lime/30 hover:bg-outskill-lime/20'
-                                                        : 'bg-gray-500/5 text-gray-400 border-gray-500/20 hover:bg-gray-500/10'
+                                                    ? 'bg-outskill-lime/10 text-outskill-lime border-outskill-lime/30 hover:bg-outskill-lime/20'
+                                                    : 'bg-gray-500/5 text-gray-400 border-gray-500/20 hover:bg-gray-500/10'
                                                     }`}
                                             >
                                                 Book on {platform.name}
                                                 {platform.recommended && ' ⭐'}
                                             </a>
                                         ))}
+                                    </div>
+                                )}
+
+                                {/* Live Train Info Injection */}
+                                {leg.mode === 'train' && leg.trainNumber && liveData[leg.trainNumber] && (
+                                    <div className="mt-4 p-3 bg-blue-900/20 border border-blue-500/30 rounded-xl">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></div>
+                                            <span className="text-xs font-bold text-blue-400 uppercase tracking-widest">Live Running Status</span>
+                                        </div>
+                                        <div className="flex flex-col gap-1 text-sm text-gray-300">
+                                            <div>
+                                                <span className="text-gray-500">Currently at:</span> <span className="font-semibold text-white">{liveData[leg.trainNumber]?.currentStation || 'Unknown'}</span>
+                                            </div>
+                                            <div>
+                                                <span className="text-gray-500">Status:</span> <span className={`font-semibold ${liveData[leg.trainNumber]?.delayStatus === 'On Time' ? 'text-green-400' : 'text-orange-400'}`}>{liveData[leg.trainNumber]?.delayStatus}</span>
+                                            </div>
+                                            {liveData[leg.trainNumber]?.upcomingStations && liveData[leg.trainNumber]!.upcomingStations.length > 0 && (
+                                                <div className="text-xs text-gray-500 mt-1">
+                                                    Next: {liveData[leg.trainNumber]?.upcomingStations.map(s => s.station_name).join(' → ')}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <div className="text-[10px] text-gray-600 mt-2 text-right">
+                                            {liveData[leg.trainNumber]?.lastUpdated}
+                                        </div>
                                     </div>
                                 )}
                             </div>
